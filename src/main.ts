@@ -3,17 +3,21 @@ import http from 'http';
 import { Server } from 'socket.io';
 import MongoDBService from './infrastructure/persistance/mongodb/mongodb.service';
 import * as dotenv from 'dotenv';
+import crewRoutes from './presentation/routes/crew.routes';
+import userRoutes from './presentation/routes/user.routes';
+import projectRoutes from './presentation/routes/project.routes';
+import taskRoutes from './presentation/routes/task.routes';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
 
 // Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI as string
+const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/extasecollabdb';
 MongoDBService.connect(mongoUri)
     .then(() => {
         // Create HTTP server
@@ -30,10 +34,11 @@ MongoDBService.connect(mongoUri)
             });
         });
 
-        // Sample route
-        app.get('/', (req, res) => {
-            res.send('Hello, World!');
-        });
+        // Utiliser les routes
+        app.use('/api/crews', crewRoutes);
+        app.use('/api/users', userRoutes);
+        app.use('/api/projects', projectRoutes);
+        app.use('/api/tasks', taskRoutes);
 
         // Start the server
         server.listen(PORT, () => {

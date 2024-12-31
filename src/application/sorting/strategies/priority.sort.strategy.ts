@@ -1,5 +1,5 @@
-import { SortStrategy } from "./sort.strategy";
-import { ITask } from "../../domain/entities/task";
+import { SortStrategy } from "../sort.strategy";
+import { ITask } from "../../../domain/entities/task.entity";
 
 export class PrioritySortStrategy implements SortStrategy {
     sort(tasks: ITask[]): ITask[] {

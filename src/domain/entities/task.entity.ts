@@ -8,6 +8,7 @@ export interface ITask extends Document {
     status: 'pending' | 'in progress' | 'completed';
     priority: 'Urgent' | 'Normal' | 'Low';
     projectId: mongoose.Types.ObjectId;
+    comments?: mongoose.Types.ObjectId[];
     assignedTo?: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -21,7 +22,8 @@ const taskSchema = new mongoose.Schema<ITask>({
     status: { type: String, enum: ['pending', 'in progress', 'completed'], default: 'pending' },
     priority: { type: String, enum: ['Urgent', 'Normal', 'Low'], default: 'Low' },
     projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
-    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'Crew' }
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'Crew' },
+    comments: { type: [mongoose.Schema.Types.ObjectId], ref: 'Comment', required: false },
 }, { timestamps: true });
 
 const Task = mongoose.model<ITask>('Task', taskSchema);

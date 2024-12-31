@@ -6,15 +6,31 @@ import * as dotenv from 'dotenv';
 import crewRoutes from './presentation/routes/crew.routes';
 import userRoutes from './presentation/routes/user.routes';
 import projectRoutes from './presentation/routes/project.routes';
-import taskRoutes from './presentation/routes/task.routes';
+import taskRoutes, { createTaskRoutes } from './presentation/routes/task.routes';
+import authRoutes from './presentation/routes/auth.routes';
+import passport from './application/config/passport.config';
+import session from 'express-session';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Vérifiez que JWT_SECRET est défini
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not defined');
+}
+
 // Middleware
 app.use(express.json());
+app.use(session({
+    secret: jwtSecret, // Utilisez la variable vérifiée
+    resave: false,
+    saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/extasecollabdb';
@@ -38,7 +54,8 @@ MongoDBService.connect(mongoUri)
         app.use('/api/crews', crewRoutes);
         app.use('/api/users', userRoutes);
         app.use('/api/projects', projectRoutes);
-        app.use('/api/tasks', taskRoutes);
+        app.use('/api/tasks', createTaskRoutes(io));
+        app.use('/api/auth', authRoutes);
 
         // Start the server
         server.listen(PORT, () => {

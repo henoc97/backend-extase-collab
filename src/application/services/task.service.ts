@@ -1,4 +1,4 @@
-import TaskModel, { ITask } from "../../domain/entities/task";
+import TaskModel, { ITask } from "../../domain/entities/task.entity";
 import NotificationService from './notification.service';
 import TaskFactory from '../factories/task.factory';
 import { Server } from 'socket.io';

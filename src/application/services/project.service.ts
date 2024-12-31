@@ -1,4 +1,4 @@
-import ProjectModel, { IProject } from "../../domain/entities/project";
+import ProjectModel, { IProject } from "../../domain/entities/project.entity";
 
 class ProjectService {
     private static instance: ProjectService;

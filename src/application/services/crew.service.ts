@@ -1,4 +1,4 @@
-import CrewModel, { ICrew } from "../../domain/entities/crew";
+import CrewModel, { ICrew } from "../../domain/entities/crew.entity";
 
 class CrewService {
     private static instance: CrewService;

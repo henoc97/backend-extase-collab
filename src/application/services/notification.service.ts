@@ -1,4 +1,4 @@
-import NotificationModel, { INotification } from "../../domain/entities/notification";
+import NotificationModel, { INotification } from "../../domain/entities/notification.entity";
 import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 import EmailService from './email.service';

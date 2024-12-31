@@ -1,66 +1,87 @@
 import { Request, Response } from 'express';
 import ProjectService from '../../application/services/project.service';
-import { IProject } from '../../domain/entities/project';
+import { IProject } from '../../domain/entities/project.entity';
 
 class ProjectController {
     private projectService = ProjectService;
 
-    public async createProject(req: Request, res: Response): Promise<Response> {
+
+    public async createProject(req: any, res: any): Promise<void> {
         try {
             const projectData: IProject = req.body;
             const project = await this.projectService.createProject(projectData);
-            return res.status(201).json(project);
+            res.status(201).json(project);
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error instanceof Error) {
+                res.status(500).json(`Error: ${error.message}`);
+            } else {
+                res.status(500).json('Unknown error');
+            }
         }
     }
 
-    public async getProjectById(req: Request, res: Response): Promise<Response> {
+    public async getProjectById(req: Request, res: Response): Promise<void> {
         try {
             const projectId = req.params.id;
             const project = await this.projectService.getProjectById(projectId);
             if (!project) {
-                return res.status(404).json({ message: 'Project not found' });
+                res.status(404).json({ message: 'Project not found' });
             }
-            return res.json(project);
+            res.status(200).json(project);
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error instanceof Error) {
+                res.status(500).json(`Error: ${error.message}`);
+            } else {
+                res.status(500).json('Unknown error');
+            }
         }
     }
 
-    public async updateProject(req: Request, res: Response): Promise<Response> {
+    public async updateProject(req: Request, res: Response): Promise<void> {
         try {
             const projectId = req.params.id;
             const updateData = req.body;
             const updatedProject = await this.projectService.updateProject(projectId, updateData);
             if (!updatedProject) {
-                return res.status(404).json({ message: 'Project not found' });
+                res.status(404).json({ message: 'Project not found' });
             }
-            return res.json(updatedProject);
+            res.status(200).json(updatedProject);
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error instanceof Error) {
+                res.status(500).json(`Error: ${error.message}`);
+            } else {
+                res.status(500).json('Unknown error');
+            }
         }
     }
 
-    public async deleteProject(req: Request, res: Response): Promise<Response> {
+    public async deleteProject(req: Request, res: Response): Promise<void> {
         try {
             const projectId = req.params.id;
             const deletedProject = await this.projectService.deleteProject(projectId);
             if (!deletedProject) {
-                return res.status(404).json({ message: 'Project not found' });
+                res.status(404).json({ message: 'Project not found' });
             }
-            return res.status(204).send();
+            res.status(204).send();
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error instanceof Error) {
+                res.status(500).json(`Error: ${error.message}`);
+            } else {
+                res.status(500).json('Unknown error');
+            }
         }
     }
 
-    public async getAllProjects(req: Request, res: Response): Promise<Response> {
+    public async getAllProjects(req: Request, res: Response): Promise<void> {
         try {
             const projects = await this.projectService.getAllProjects();
-            return res.json(projects);
+            res.status(200).json(projects);
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error instanceof Error) {
+                res.status(500).json(`Error: ${error.message}`);
+            } else {
+                res.status(500).json('Unknown error');
+            }
         }
     }
 }

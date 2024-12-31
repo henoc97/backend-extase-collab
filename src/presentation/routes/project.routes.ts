@@ -2,7 +2,6 @@ import { Router } from 'express';
 import ProjectController from '../controllers/project.controller';
 
 const router = Router();
-
 // Définir les routes pour Project
 router.post('/', ProjectController.createProject);
 router.get('/:id', ProjectController.getProjectById);

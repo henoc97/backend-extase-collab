@@ -1,4 +1,4 @@
-import TaskModel, { ITask } from "../../domain/entities/task";
+import TaskModel, { ITask } from "../../domain/entities/task.entity";
 
 class TaskFactory {
     // Méthode pour créer une tâche en fonction de la priorité

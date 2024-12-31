@@ -1,7 +1,8 @@
 import mongoose, { Document } from 'mongoose';
+import { IObserver } from "../../application/observers/observer"
 
 // Définir une interface pour le document utilisateur
-export interface IUser extends Document {
+export class User extends Document implements IObserver {
     _id: string;
     googleId: string;
     name: string;
@@ -10,10 +11,35 @@ export interface IUser extends Document {
     comments?: mongoose.Types.ObjectId[];
     createdAt?: Date;
     updatedAt?: Date;
+
+    public constructor(
+        _id: string,
+        googleId: string,
+        name: string,
+        email: string,
+        password?: string | null,
+        comments?: mongoose.Types.ObjectId[],
+        createdAt?: Date,
+        updatedAt?: Date
+    ) {
+        super();
+        this._id = _id;
+        this.googleId = googleId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.comments = comments;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    update(value: any): void {
+        throw new Error('Method not implemented.');
+    }
 }
 
 // Définir le schéma
-const userSchema = new mongoose.Schema<IUser>({
+const userSchema = new mongoose.Schema<User>({
     googleId: { type: String, required: false },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -22,5 +48,5 @@ const userSchema = new mongoose.Schema<IUser>({
 }, { timestamps: true });
 
 // Exporter le modèle
-const User = mongoose.model<IUser>('User', userSchema);
-export default User;
+const UserModel = mongoose.model<User>('User', userSchema);
+export default UserModel;

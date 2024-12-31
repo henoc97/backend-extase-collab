@@ -1,7 +1,7 @@
 import { Strategy as JwtStrategy, ExtractJwt, VerifyCallback } from 'passport-jwt';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport';
-import UserModel, { IUser } from '../../domain/entities/user.entity';
+import UserModel, { User } from '../../domain/entities/user.entity';
 import dotenv from 'dotenv';
 import userService from '../services/user.service';
 
@@ -23,8 +23,8 @@ interface JwtPayload {
     id: string; // Adjust the type according to your user ID type
 }
 
-// Update VerifyCallback to accept IUser
-type CustomVerifyCallback = (error: any, user?: IUser | false, info?: any) => void;
+// Update VerifyCallback to accept User
+type CustomVerifyCallback = (error: any, user?: User | false, info?: any) => void;
 
 passport.use(new JwtStrategy(jwtOptions, async (jwtPayload: JwtPayload, done: CustomVerifyCallback) => {
     try {

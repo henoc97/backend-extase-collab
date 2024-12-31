@@ -1,4 +1,4 @@
-import UserModel, { IUser } from "../../domain/entities/user.entity";
+import UserModel, { User } from "../../domain/entities/user.entity";
 import { comparePassword, hashPassword } from '../helper/hash-compare-pwd';
 
 class UserService {
@@ -13,25 +13,25 @@ class UserService {
         return UserService.instance;
     }
 
-    public async createUser(userData: any): Promise<IUser> {
+    public async createUser(userData: any): Promise<User> {
         const user = new UserModel(userData);
         if (user.password) user.password = await hashPassword(user.password);
         return await user.save();
     }
 
-    public async getUserById(userId: string): Promise<IUser | null> {
+    public async getUserById(userId: string): Promise<User | null> {
         return await UserModel.findById(userId);
     }
 
-    public async findOne(query: object): Promise<IUser | null> { // Ajout de la méthode findOne
+    public async findOne(query: object): Promise<User | null> { // Ajout de la méthode findOne
         return await UserModel.findOne(query);
     }
 
-    public async updateUser(userId: string, updateData: any): Promise<IUser | null> {
+    public async updateUser(userId: string, updateData: any): Promise<User | null> {
         return await UserModel.findByIdAndUpdate(userId, updateData, { new: true });
     }
 
-    public async deleteUser(userId: string): Promise<IUser | null> {
+    public async deleteUser(userId: string): Promise<User | null> {
         return await UserModel.findByIdAndDelete(userId);
     }
 

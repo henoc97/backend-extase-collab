@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import UserService from '../../application/services/user.service';
-import { IUser } from '../../domain/entities/user.entity';
+import { User } from '../../domain/entities/user.entity';
 
 class UserController {
     private userService = UserService;
 
     public async createUser(req: Request, res: Response): Promise<void> {
         try {
-            const userData: IUser = req.body;
+            const userData: User = req.body;
             const user = await this.userService.createUser(userData);
             res.status(201).json(user);
         } catch (error) {

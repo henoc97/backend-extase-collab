@@ -1,7 +1,10 @@
 import mongoose, { Document } from 'mongoose';
+import { IObservable } from "../../application/observers/observable"
+import { IObserver } from '../../application/observers/observer';
+
 
 // Définir une interface pour le document Task
-export interface ITask extends Document {
+export class Task extends Document implements IObservable {
     title: string;
     description?: string;
     dueDate?: Date;
@@ -12,10 +15,36 @@ export interface ITask extends Document {
     assignedTo?: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
+    observers: IObserver[];
+
+    constructor(init: Partial<Task>) {
+        super();
+        this.title = init.title!;
+        this.description = init.description;
+        this.dueDate = init.dueDate;
+        this.status = init.status || 'pending';
+        this.priority = init.priority || 'Low';
+        this.projectId = init.projectId!;
+        this.comments = init.comments;
+        this.assignedTo = init.assignedTo;
+        this.createdAt = init.createdAt;
+        this.updatedAt = init.updatedAt;
+        this.observers = [];
+    }
+
+    subscribe(observer: IObserver): void {
+        throw new Error('Method not implemented.');
+    }
+    unsubscribe(observer: IObserver): void {
+        throw new Error('Method not implemented.');
+    }
+    notifyObservers(): void {
+        throw new Error('Method not implemented.');
+    }
 }
 
 // Créer le schéma de tâche
-const taskSchema = new mongoose.Schema<ITask>({
+const taskSchema = new mongoose.Schema<Task>({
     title: { type: String, required: true },
     description: { type: String, required: false },
     dueDate: { type: Date, required: false },
@@ -26,6 +55,5 @@ const taskSchema = new mongoose.Schema<ITask>({
     comments: { type: [mongoose.Schema.Types.ObjectId], ref: 'Comment', required: false },
 }, { timestamps: true });
 
-const Task = mongoose.model<ITask>('Task', taskSchema);
-
-export default Task;
+const TaskModel = mongoose.model<Task>('Task', taskSchema);
+export default TaskModel;

@@ -1,6 +1,8 @@
 import mongoose, { Document } from 'mongoose';
 import { IObservable } from "../../application/observers/observable"
 import { IObserver } from '../../application/observers/observer';
+import Crew from './crew.entity';
+import User from './user.entity';
 
 
 // Définir une interface pour le document Task
@@ -30,16 +32,38 @@ export class Task extends Document implements IObservable {
         this.createdAt = init.createdAt;
         this.updatedAt = init.updatedAt;
         this.observers = [];
+        this.subscribeAllObservers();
+
+
+    }
+
+    subscribeAllObservers() {
+        this.observers = [];
+        if (this.assignedTo) {
+            Crew.findById(this.assignedTo).populate('members').then(crew => {
+                if (crew) {
+                    crew.members.forEach(memberId => {
+                        User.findById(memberId).then(user => {
+                            if (user) {
+                                this.subscribe(user);
+                            }
+                        });
+                    });
+                }
+            });
+        }
     }
 
     subscribe(observer: IObserver): void {
-        throw new Error('Method not implemented.');
+        this.observers.push(observer);
     }
     unsubscribe(observer: IObserver): void {
-        throw new Error('Method not implemented.');
+        this.observers = this.observers.filter(obs => obs !== observer);
     }
     notifyObservers(): void {
-        throw new Error('Method not implemented.');
+        for (const observer of this.observers) {
+            observer.update("notifyObservers")
+        }
     }
 }
 

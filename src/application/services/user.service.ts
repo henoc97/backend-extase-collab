@@ -4,8 +4,6 @@ import { comparePassword, hashPassword } from '../helper/hash-compare-pwd';
 class UserService {
     private static instance: UserService;
 
-    private constructor() { }
-
     public static getInstance(): UserService {
         if (!UserService.instance) {
             UserService.instance = new UserService();
@@ -39,9 +37,13 @@ class UserService {
         return await UserModel.findOne({ email });
     }
 
+
+
     public async validateUserPassword(user: any, password: string): Promise<boolean> {
         return user?.password ? await comparePassword(user.password, password) : false;
     }
+
+
 }
 
 export default UserService.getInstance();

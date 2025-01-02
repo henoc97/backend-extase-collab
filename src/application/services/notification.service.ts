@@ -35,6 +35,7 @@ class NotificationService {
             await PushService.sendPushNotification(notificationData.subscription, {
                 title: notificationData.title,
                 body: notificationData.content,
+                sendTo: notificationData.receiverId,
             });
         }
 
@@ -42,7 +43,7 @@ class NotificationService {
     }
 
     // Obtenir les notifications par utilisateur
-    public async getNotificationsByUserId(userId: Types.ObjectId): Promise<INotification[]> {
+    public async getNotificationsByUserId(userId: string): Promise<INotification[]> {
         return await NotificationModel.find({ sendTo: userId });
     }
 

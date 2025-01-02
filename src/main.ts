@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
 import MongoDBService from './infrastructure/persistance/mongodb/mongodb.service';
@@ -6,7 +7,9 @@ import * as dotenv from 'dotenv';
 import crewRoutes from './presentation/routes/crew.routes';
 import userRoutes from './presentation/routes/user.routes';
 import projectRoutes from './presentation/routes/project.routes';
-import taskRoutes, { createTaskRoutes } from './presentation/routes/task.routes';
+import { createTaskRoutes } from './presentation/routes/task.routes';
+import { createNotificationRoutes } from './presentation/routes/notification.routes';
+import commentRoutes from './presentation/routes/comment.routes';
 import authRoutes from './presentation/routes/auth.routes';
 import passport from './application/config/passport.config';
 import session from 'express-session';
@@ -14,6 +17,12 @@ import session from 'express-session';
 dotenv.config();
 
 const app = express();
+app.use(cors({
+    origin: 'http://localhost:3000', // Remplacez par votre domaine en production
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Autorisez les méthodes nécessaires
+    credentials: true, // Si vous utilisez des cookies ou des sessions
+}));
+
 const PORT = process.env.PORT || 5000;
 
 // Vérifiez que JWT_SECRET est défini
@@ -53,8 +62,10 @@ MongoDBService.connect(mongoUri)
         // Utiliser les routes
         app.use('/api/crews', crewRoutes);
         app.use('/api/users', userRoutes);
+        app.use('/api/comments', commentRoutes);
         app.use('/api/projects', projectRoutes);
         app.use('/api/tasks', createTaskRoutes(io));
+        app.use('/api/notifications', createNotificationRoutes(io));
         app.use('/api/auth', authRoutes);
 
         // Start the server

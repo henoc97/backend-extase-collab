@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import AuthController from '../controllers/auth.controller';
 import passport from '../../application/config/passport.config';
+import authenticateToken from '../../application/middlewares/auth';
 
 const router = Router();
 
@@ -19,7 +20,11 @@ router.get(
 );
 router.get(
     '/google/callback',
-    passport.authenticate('google', { failureRedirect: '/' }),
+    passport.authenticate('google',
+        {
+            successRedirect: 'http://localhost:3000/dashboard', // Remplacez par votre URL après login
+            failureRedirect: 'http://localhost:3000/login',    // Redirection en cas d'échec
+        }),
     AuthController.googleCallback
 );
 
@@ -29,5 +34,11 @@ router.post('/login', AuthController.login);
 
 // Middleware pour protéger les routes
 router.get('/protected', AuthController.protectedRoute);
+
+router.get('/refresh-token', AuthController.refreshToken);
+
+router.use(authenticateToken)
+
+router.get('/logout', AuthController.logout);
 
 export default router;

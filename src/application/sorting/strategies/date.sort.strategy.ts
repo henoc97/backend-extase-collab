@@ -1,8 +1,8 @@
 import { SortStrategy } from "../sort.strategy";
-import { ITask } from "../../../domain/entities/task.entity";
+import { Task } from "../../../domain/entities/task.entity";
 
 export class DateSortStrategy implements SortStrategy {
-    sort(tasks: ITask[]): ITask[] {
+    sort(tasks: Task[]): Task[] {
         return tasks.sort((a, b) => {
             return new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime();
         });

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import TaskService from '../../application/services/task.service';
 import { Server } from 'socket.io';
-import { ITask } from '../../domain/entities/task.entity';
+import { Task } from '../../domain/entities/task.entity';
 
 class TaskController {
     private taskService: TaskService;
@@ -12,7 +12,7 @@ class TaskController {
 
     public async createTask(req: Request, res: Response): Promise<void> {
         try {
-            const taskData: ITask = req.body;
+            const taskData: Task = req.body;
             const task = await this.taskService.createTask(taskData);
             res.status(201).json(task);
         } catch (error) {

@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import CrewController from '../controllers/crew.controller';
+import authenticateToken from '../../application/middlewares/auth';
 
 const router = Router();
+
+router.use(authenticateToken)
 
 // Définir les routes pour Crew
 router.post('/', CrewController.createCrew);

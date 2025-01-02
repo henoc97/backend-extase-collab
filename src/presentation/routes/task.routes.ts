@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import TaskController from '../controllers/task.controller';
 import { Server } from 'socket.io';
+import authenticateToken from '../../application/middlewares/auth';
 
 const router = Router();
 
 export const createTaskRoutes = (io: Server) => {
     const taskController = new TaskController(io);
+    router.use(authenticateToken)
 
     // Définir les routes pour Task
     router.post('/', (req, res) => taskController.createTask(req, res));

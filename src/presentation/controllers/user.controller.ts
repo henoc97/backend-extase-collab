@@ -1,15 +1,19 @@
 import { Request, Response } from 'express';
-import UserService from '../../application/services/user.service';
+import userService from '../../application/services/user.service';
 import { User } from '../../domain/entities/user.entity';
+import authService from '../../application/services/auth.service';
+
 
 class UserController {
-    private userService = UserService;
-
     public async createUser(req: Request, res: Response): Promise<void> {
         try {
             const userData: User = req.body;
-            const user = await this.userService.createUser(userData);
-            res.status(201).json(user);
+            const user: any = await userService.createUser(userData);
+            const token = authService.generateToken(user._id, user.email);
+            user.password = "";
+            console.log("token: " + token);
+            const result = { user, token };
+            res.status(201).json(result);
         } catch (error) {
             if (error instanceof Error) {
                 res.status(500).json(`Error: ${error.message}`);
@@ -22,7 +26,7 @@ class UserController {
     public async getUserById(req: Request, res: Response): Promise<void> {
         try {
             const userId = req.params.id;
-            const user = await this.userService.getUserById(userId);
+            const user = await userService.getUserById(userId);
             if (!user) {
                 res.status(404).json({ message: 'User not found' });
             }
@@ -40,7 +44,7 @@ class UserController {
         try {
             const userId = req.params.id;
             const updateData = req.body;
-            const updatedUser = await this.userService.updateUser(userId, updateData);
+            const updatedUser = await userService.updateUser(userId, updateData);
             if (!updatedUser) {
                 res.status(404).json({ message: 'User not found' });
             }
@@ -57,7 +61,7 @@ class UserController {
     public async deleteUser(req: Request, res: Response): Promise<void> {
         try {
             const userId = req.params.id;
-            const deletedUser = await this.userService.deleteUser(userId);
+            const deletedUser = await userService.deleteUser(userId);
             if (!deletedUser) {
                 res.status(404).json({ message: 'User not found' });
             }

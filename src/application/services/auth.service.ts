@@ -20,12 +20,37 @@ class AuthService {
         return user;
     }
 
-    public generateToken(userId: string): string {
+    /**
+     * 
+     * @param userId 
+     * @param email 
+     * @returns { accessToken, refreshToken }
+     */
+    public generateToken(userId: string, email: string): { accessToken: string, refreshToken: string } {
         const jwtSecret = process.env.JWT_SECRET;
         if (!jwtSecret) {
             throw new Error('JWT_SECRET environment variable is not defined');
         }
-        return jwt.sign({ id: userId }, jwtSecret, { expiresIn: '1h' });
+        const accessToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '15m' });
+        const refreshToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '7d' });
+        const tokens = { accessToken, refreshToken };
+        return tokens;
+    }
+
+
+    /**
+     * 
+     * @param userId 
+     * @param email 
+     * @returns accesToken: string
+     */
+    public generateAccessToken(userId: string, email: string): string {
+        const jwtSecret = process.env.JWT_SECRET;
+        if (!jwtSecret) {
+            throw new Error('JWT_SECRET environment variable is not defined');
+        }
+        const accessToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '15m' });
+        return accessToken;
     }
 }
 

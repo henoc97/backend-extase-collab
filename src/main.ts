@@ -4,11 +4,13 @@ import http from 'http';
 import { Server } from 'socket.io';
 import MongoDBService from './infrastructure/persistance/mongodb/mongodb.service';
 import * as dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import crewRoutes from './presentation/routes/crew.routes';
 import userRoutes from './presentation/routes/user.routes';
 import projectRoutes from './presentation/routes/project.routes';
 import { createTaskRoutes } from './presentation/routes/task.routes';
 import { createNotificationRoutes } from './presentation/routes/notification.routes';
+import { createMergeReqRoutes } from './presentation/routes/merge-request.routes';
 import commentRoutes from './presentation/routes/comment.routes';
 import authRoutes from './presentation/routes/auth.routes';
 import passport from './application/config/passport.config';
@@ -17,10 +19,12 @@ import session from 'express-session';
 dotenv.config();
 
 const app = express();
+app.use(cookieParser()); // Ajoutez ce middleware pour analyser les cookies
 app.use(cors({
-    origin: 'http://localhost:3000', // Remplacez par votre domaine en production
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Autorisez les méthodes nécessaires
-    credentials: true, // Si vous utilisez des cookies ou des sessions
+    origin: 'http://localhost:3000', // Autoriser le domaine de votre front-end
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true, // Autoriser les cookies et les sessions
+    allowedHeaders: ['Content-Type', 'Authorization'], // Autoriser les en-têtes spécifiques
 }));
 
 const PORT = process.env.PORT || 5000;
@@ -65,6 +69,7 @@ MongoDBService.connect(mongoUri)
         app.use('/api/comments', commentRoutes);
         app.use('/api/projects', projectRoutes);
         app.use('/api/tasks', createTaskRoutes(io));
+        app.use('/api/merge', createMergeReqRoutes(io));
         app.use('/api/notifications', createNotificationRoutes(io));
         app.use('/api/auth', authRoutes);
 

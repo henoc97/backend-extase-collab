@@ -10,13 +10,15 @@ class TaskController {
         this.taskService = TaskService.getInstance(io);
     }
 
-    public async createTask(req: Request, res: Response): Promise<void> {
+    public createTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskData: Task = req.body;
+            console.log('task data received: ', taskData);
             const task = await this.taskService.createTask(taskData);
             res.status(201).json(task);
         } catch (error) {
             if (error instanceof Error) {
+                console.log(`Error create task controller: ${error.message}`);
                 res.status(500).json(`Error: ${error.message}`);
             } else {
                 res.status(500).json('Unknown error');
@@ -24,7 +26,7 @@ class TaskController {
         }
     }
 
-    public async getTaskById(req: Request, res: Response): Promise<void> {
+    public getTaskById = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskId = req.params.id;
             const task = await this.taskService.getTaskById(taskId);
@@ -41,7 +43,7 @@ class TaskController {
         }
     }
 
-    public async updateTask(req: Request, res: Response): Promise<void> {
+    public updateTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskId = req.params.id;
             const updateData = req.body;
@@ -59,7 +61,7 @@ class TaskController {
         }
     }
 
-    public async deleteTask(req: Request, res: Response): Promise<void> {
+    public deleteTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskId = req.params.id;
             const deletedTask = await this.taskService.deleteTask(taskId);
@@ -76,7 +78,7 @@ class TaskController {
         }
     }
 
-    public async getTasksByProjectId(req: Request, res: Response): Promise<void> {
+    public getTasksByProjectId = async (req: Request, res: Response): Promise<void> => {
         try {
             const projectId = req.params.projectId;
             const tasks = await this.taskService.getTasksByProjectId(projectId);
@@ -90,7 +92,7 @@ class TaskController {
         }
     }
 
-    public async assignTask(req: Request, res: Response): Promise<void> {
+    public assignTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskId = req.params.id;
             const { assignedTo } = req.body;

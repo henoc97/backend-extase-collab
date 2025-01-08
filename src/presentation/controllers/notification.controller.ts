@@ -11,7 +11,7 @@ class NotificationController {
         this.notificationService = NotificationService.getInstance(io);
     }
 
-    public async createNotification(req: Request, res: Response): Promise<void> {
+    public createNotification = async (req: Request, res: Response): Promise<void> => {
         try {
             const notificationData: INotification = req.body;
             const notification = await this.notificationService.createNotification(notificationData);
@@ -25,7 +25,7 @@ class NotificationController {
         }
     }
 
-    public async getNotificationsByUserId(req: Request, res: Response): Promise<void> {
+    public getNotificationsByUserId = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = req.params.userId;
             const notifications = await this.notificationService.getNotificationsByUserId(userId);
@@ -39,7 +39,7 @@ class NotificationController {
         }
     }
 
-    public async deleteNotification(req: Request, res: Response): Promise<void> {
+    public deleteNotification = async (req: Request, res: Response): Promise<void> => {
         try {
             const notificationId = req.params.id;
             const deletedNotification = await this.notificationService.deleteNotification(notificationId);

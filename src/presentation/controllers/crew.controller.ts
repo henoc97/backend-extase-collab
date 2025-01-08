@@ -5,13 +5,16 @@ import { ICrew } from '../../domain/entities/crew.entity';
 class CrewController {
     private crewService = CrewService;
 
-    public async createCrew(req: Request, res: Response): Promise<void> {
+    public createCrew = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewData: ICrew = req.body;
+            console.log('crew data req.body: ' + JSON.stringify(req.body));
+            console.log('crew data received: ' + JSON.stringify(crewData));
             const crew = await this.crewService.createCrew(crewData);
             res.status(201).json(crew);
         } catch (error) {
             if (error instanceof Error) {
+                console.log(`Error: ${error.message}`);
                 res.status(500).json(`Error: ${error.message}`);
             } else {
                 res.status(500).json('Unknown error');
@@ -19,7 +22,7 @@ class CrewController {
         }
     }
 
-    public async getCrewById(req: Request, res: Response): Promise<void> {
+    public getCrewById = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewId = req.params.id;
             const crew = await this.crewService.getCrewById(crewId);
@@ -36,7 +39,7 @@ class CrewController {
         }
     }
 
-    public async updateCrew(req: Request, res: Response): Promise<void> {
+    public updateCrew = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewId = req.params.id;
             const updateData = req.body;
@@ -54,7 +57,7 @@ class CrewController {
         }
     }
 
-    public async deleteCrew(req: Request, res: Response): Promise<void> {
+    public deleteCrew = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewId = req.params.id;
             const deletedCrew = await this.crewService.deleteCrew(crewId);

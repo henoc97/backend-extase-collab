@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import ProjectModel, { IProject } from "../../domain/entities/project.entity";
+import crewService from "./crew.service";
 
 class ProjectService {
     private static instance: ProjectService;
@@ -17,8 +19,23 @@ class ProjectService {
         return await project.save();
     }
 
-    public async getProjectById(projectId: string): Promise<IProject | null> {
-        return await ProjectModel.findById(projectId);
+    public async getProjectById(projectId: string): Promise<any> {
+        const projectFound: any = await ProjectModel.findById(projectId)
+            .populate({
+                path: 'tasks',
+                model: 'Task',
+            }).exec();
+
+        // Convert to plain TypeScript object
+        const project = projectFound.toObject();
+
+        const taskIds = project?.tasks!.map((task: any) => task._id);
+        console.log("taskIds result from getProjectByID: ", taskIds);
+        const teams = await crewService.getCrewsByTaskIds(taskIds);
+        project.teams = teams;
+        console.log("teams result from getProjectByID: ", teams);
+        console.log("project result from getProjectByID: ", project);
+        return project;
     }
 
     public async updateProject(projectId: string, updateData: any): Promise<IProject | null> {
@@ -31,6 +48,25 @@ class ProjectService {
 
     public async getAllProjects(): Promise<IProject[]> {
         return await ProjectModel.find();
+    }
+
+    // Nouvelle méthode pour compter les projets
+    public async getProjectByCreatorId(creatorId: string): Promise<string[]> {
+        const projects = await ProjectModel.find({ creatorId: creatorId });
+        const projectIds = projects.map(project => project._id!.toString());
+        return projectIds;
+    }
+
+    // Nouvelle méthode pour compter les projets
+    public async getProjectCountByCreatorId(creatorId: string): Promise<number> {
+        return await ProjectModel.find({ creatorId: creatorId }).countDocuments();
+    }
+
+    public async getRecentProjects(creatorId: string): Promise<IProject[]> {
+        const recentProjects = await ProjectModel.find({ creatorId: creatorId })
+            .sort({ createdAt: -1 }) // Trie par date de création (du plus récent au plus ancien)
+            .limit(5);
+        return recentProjects;
     }
 }
 

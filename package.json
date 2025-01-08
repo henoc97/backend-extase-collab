@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "src/main.ts",
   "scripts": {
-    "start:dev": "nodemon --exec ts-node src/main.ts",
+    "start:dev": "nodemon --watch src --ext ts --exec ts-node src/main.ts",
     "start:mongodb": "sudo systemctl start mongod",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "node src/main.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -30,6 +33,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.1",
@@ -40,13 +44,12 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-jwt": "^4.0.1",
     "@types/web-push": "^3.6.4",
+    "chokidar": "^4.0.3",
     "nodemon": "^3.1.9",
+    "ts-loader": "^9.5.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.2"
-  },
-  "watch": [
-    "src"
-  ],
-  "ext": "ts",
-  "exec": "ts-node src/main.ts"
+    "typescript": "^5.7.2",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  }
 }

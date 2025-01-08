@@ -5,14 +5,17 @@ import { IProject } from '../../domain/entities/project.entity';
 class ProjectController {
     private projectService = ProjectService;
 
-
-    public async createProject(req: any, res: any): Promise<void> {
+    public createProject = async (req: any, res: any): Promise<void> => {
         try {
             const projectData: IProject = req.body;
+            projectData.creatorId = req.user.id;
+            console.log("Project received: " + JSON.stringify(projectData));
             const project = await this.projectService.createProject(projectData);
+            console.log("Project created: " + JSON.stringify(project));
             res.status(201).json(project);
         } catch (error) {
             if (error instanceof Error) {
+                console.log("error: ", error);
                 res.status(500).json(`Error: ${error.message}`);
             } else {
                 res.status(500).json('Unknown error');
@@ -20,16 +23,19 @@ class ProjectController {
         }
     }
 
-    public async getProjectById(req: Request, res: Response): Promise<void> {
+    public getProjectById = async (req: Request, res: Response): Promise<void> => {
         try {
             const projectId = req.params.id;
+            console.log("projectId: ", projectId);
             const project = await this.projectService.getProjectById(projectId);
             if (!project) {
                 res.status(404).json({ message: 'Project not found' });
             }
+            console.log("project got: ", project);
             res.status(200).json(project);
         } catch (error) {
             if (error instanceof Error) {
+                console.log("error: ", error);
                 res.status(500).json(`Error: ${error.message}`);
             } else {
                 res.status(500).json('Unknown error');
@@ -37,7 +43,7 @@ class ProjectController {
         }
     }
 
-    public async updateProject(req: Request, res: Response): Promise<void> {
+    public updateProject = async (req: Request, res: Response): Promise<void> => {
         try {
             const projectId = req.params.id;
             const updateData = req.body;
@@ -55,7 +61,7 @@ class ProjectController {
         }
     }
 
-    public async deleteProject(req: Request, res: Response): Promise<void> {
+    public deleteProject = async (req: Request, res: Response): Promise<void> => {
         try {
             const projectId = req.params.id;
             const deletedProject = await this.projectService.deleteProject(projectId);
@@ -72,7 +78,7 @@ class ProjectController {
         }
     }
 
-    public async getAllProjects(req: Request, res: Response): Promise<void> {
+    public getAllProjects = async (req: Request, res: Response): Promise<void> => {
         try {
             const projects = await this.projectService.getAllProjects();
             res.status(200).json(projects);

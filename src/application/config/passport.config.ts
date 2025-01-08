@@ -78,7 +78,7 @@ passport.use(new GoogleStrategy({
 }));
 
 passport.serializeUser((user, done) => {
-    done(null, user.id); // Utilisez l'ID de l'utilisateur pour la sérialisation
+    done(null, user._id); // Utilisez l'ID de l'utilisateur pour la sérialisation
 });
 
 passport.deserializeUser(async (id, done) => {

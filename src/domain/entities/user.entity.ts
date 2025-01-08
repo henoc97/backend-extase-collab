@@ -1,9 +1,9 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { IObserver } from "../../application/observers/observer"
 
 // Définir une interface pour le document utilisateur
 export class User extends Document implements IObserver {
-    _id: ObjectId;
+    _id: string;
     googleId: string;
     name: string;
     email: string;
@@ -13,7 +13,7 @@ export class User extends Document implements IObserver {
     updatedAt?: Date;
 
     public constructor(
-        _id: ObjectId,
+        _id: string,
         googleId: string,
         name: string,
         email: string,

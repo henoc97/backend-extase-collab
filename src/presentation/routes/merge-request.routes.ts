@@ -1,18 +1,12 @@
 import { Router } from 'express';
-import { Server } from 'socket.io';
 import authenticateToken from '../../application/middlewares/auth';
-import { MergeCallsController } from '../controllers/merge-calls.controller';
+import mergeCallsController from '../controllers/merge-calls.controller';
 
 const router = Router();
 
-export const createMergeReqRoutes = (io: Server) => {
-    const mergeReqController = new MergeCallsController(io);
-    router.use(authenticateToken)
+router.use(authenticateToken)
 
-    // Définir les routes pour MergeReq
-    router.get('/dashboard-request', (req, res) => mergeReqController.dashboadRequests(req, res));
+// Définir les routes pour MergeReq
+router.get('/dashboard-request', mergeCallsController.dashboadRequests);
 
-    return router;
-};
-
-export default createMergeReqRoutes; 
+export default router; 

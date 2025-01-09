@@ -1,20 +1,16 @@
 import NotificationModel, { INotification } from "../../domain/entities/notification.entity";
-import { Types } from 'mongoose';
-import { Server } from 'socket.io';
 import EmailService from './email.service';
 import PushService from './push.service';
+import SocketService from "./socket.service";
 
 class NotificationService {
     private static instance: NotificationService;
-    private io: Server;
 
-    private constructor(io: Server) {
-        this.io = io;
-    }
+    private constructor() { }
 
-    public static getInstance(io: Server): NotificationService {
+    public static getInstance(): NotificationService {
         if (!NotificationService.instance) {
-            NotificationService.instance = new NotificationService(io);
+            NotificationService.instance = new NotificationService();
         }
         return NotificationService.instance;
     }
@@ -26,7 +22,7 @@ class NotificationService {
             await notification.save();
 
             // Émettre un événement de notification via Socket.io
-            this.io.emit('notification', notificationData);
+            SocketService.sendNotification(notificationData.receiverId, notificationData);
 
             // Envoyer un email
             await EmailService.sendEmail(notificationData.sendTo, notificationData.title, notificationData.content);
@@ -59,4 +55,4 @@ class NotificationService {
     }
 }
 
-export default NotificationService; 
+export default NotificationService.getInstance(); 

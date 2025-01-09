@@ -2,19 +2,18 @@ import { Request, Response } from 'express';
 import TaskService from '../../application/services/task.service';
 import { Server } from 'socket.io';
 import { Task } from '../../domain/entities/task.entity';
+import taskService from '../../application/services/task.service';
 
 class TaskController {
-    private taskService: TaskService;
 
-    public constructor(io: Server) {
-        this.taskService = TaskService.getInstance(io);
+    public constructor() {
     }
 
     public createTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskData: Task = req.body;
             console.log('task data received: ', taskData);
-            const task = await this.taskService.createTask(taskData);
+            const task = await taskService.createTask(taskData);
             res.status(201).json(task);
         } catch (error) {
             if (error instanceof Error) {
@@ -29,7 +28,7 @@ class TaskController {
     public getTaskById = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskId = req.params.id;
-            const task = await this.taskService.getTaskById(taskId);
+            const task = await taskService.getTaskById(taskId);
             if (!task) {
                 res.status(404).json({ message: 'Task not found' });
             }
@@ -47,7 +46,7 @@ class TaskController {
         try {
             const taskId = req.params.id;
             const updateData = req.body;
-            const updatedTask = await this.taskService.updateTask(taskId, updateData);
+            const updatedTask = await taskService.updateTask(taskId, updateData);
             if (!updatedTask) {
                 res.status(404).json({ message: 'Task not found' });
             }
@@ -64,7 +63,7 @@ class TaskController {
     public deleteTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const taskId = req.params.id;
-            const deletedTask = await this.taskService.deleteTask(taskId);
+            const deletedTask = await taskService.deleteTask(taskId);
             if (!deletedTask) {
                 res.status(404).json({ message: 'Task not found' });
             }
@@ -81,7 +80,7 @@ class TaskController {
     public getTasksByProjectId = async (req: Request, res: Response): Promise<void> => {
         try {
             const projectId = req.params.projectId;
-            const tasks = await this.taskService.getTasksByProjectId(projectId);
+            const tasks = await taskService.getTasksByProjectId(projectId);
             res.status(200).json(tasks);
         } catch (error) {
             if (error instanceof Error) {
@@ -96,7 +95,7 @@ class TaskController {
         try {
             const taskId = req.params.id;
             const { assignedTo } = req.body;
-            const updatedTask = await this.taskService.assignTask(taskId, assignedTo);
+            const updatedTask = await taskService.assignTask(taskId, assignedTo);
             if (!updatedTask) {
                 res.status(404).json({ message: 'Task not found' });
             }
@@ -111,4 +110,4 @@ class TaskController {
     }
 }
 
-export default TaskController; 
+export default new TaskController(); 

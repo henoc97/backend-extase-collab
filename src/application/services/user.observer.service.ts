@@ -2,20 +2,18 @@ import { Server } from 'socket.io';
 import { IObserver } from '../observers/observer';
 import { IObserverService } from '../observers/observer.service';
 import NotificationService from './notification.service';
+import notificationService from './notification.service';
 
 
 class UserObserverService implements IObserverService {
 
     private static instance: UserObserverService;
-    private notificationService: NotificationService;
 
-    private constructor(io: Server) {
-        this.notificationService = NotificationService.getInstance(io);
-    }
+    private constructor() { }
 
-    public static getInstance(io: Server): UserObserverService {
+    public static getInstance(): UserObserverService {
         if (!UserObserverService.instance) {
-            UserObserverService.instance = new UserObserverService(io);
+            UserObserverService.instance = new UserObserverService();
         }
         return UserObserverService.instance;
     }
@@ -29,10 +27,10 @@ class UserObserverService implements IObserverService {
                 "content": content
             }
 
-            this.notificationService.createNotification(notificationData);
+            notificationService.createNotification(notificationData);
         }
     }
 
 }
 
-export default UserObserverService;
+export default UserObserverService.getInstance();

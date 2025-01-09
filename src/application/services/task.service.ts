@@ -1,31 +1,18 @@
 import TaskModel, { Task } from "../../domain/entities/task.entity";
-import NotificationService from './notification.service';
-import UserObserverService from './user.observer.service';
-import TaskFactory from '../factories/task.factory';
-import { Server } from 'socket.io';
 import { SortStrategy } from '../sorting/sort.strategy';
 import crewService from "./crew.service";
-import serService from "./user.service";
 import Project from "../../domain/entities/project.entity";
 import projectService from "./project.service";
-import CrewService from "./crew.service";
-import ProjectService from "./project.service";
+import userObserverService from "./user.observer.service";
 
 class TaskService {
     private static instance: TaskService;
-    private userObserverService: UserObserverService;
-    private crewService: CrewService;
-    private projectService: ProjectService;
 
-    private constructor(io: Server) {
-        this.userObserverService = UserObserverService.getInstance(io);
-        this.crewService = CrewService.getInstance(io);
-        this.projectService = ProjectService.getInstance(io);
-    }
+    private constructor() { }
 
-    public static getInstance(io: Server): TaskService {
+    public static getInstance(): TaskService {
         if (!TaskService.instance) {
-            TaskService.instance = new TaskService(io);
+            TaskService.instance = new TaskService();
         }
         return TaskService.instance;
     }
@@ -67,7 +54,7 @@ class TaskService {
         const updatedTask = await TaskModel.findByIdAndUpdate(taskId, updateData, { new: true });
 
         updatedTask!.subscribeAllObservers();
-        this.userObserverService.notify(updatedTask!.observers, 'task updated', `new task updated for ecommerce project: ${updatedTask!.title}`);
+        userObserverService.notify(updatedTask!.observers, 'task updated', `new task updated for ecommerce project: ${updatedTask!.title}`);
         return updatedTask;
     }
 
@@ -91,7 +78,7 @@ class TaskService {
         const updatedTask = await TaskModel.findByIdAndUpdate(taskId, { assignedTo }, { new: true });
 
         updatedTask!.subscribeAllObservers();
-        this.userObserverService.notify(updatedTask!.observers, 'task updated', `new task updated for ecommerce project: ${updatedTask!.title}`);
+        userObserverService.notify(updatedTask!.observers, 'task updated', `new task updated for ecommerce project: ${updatedTask!.title}`);
 
         return updatedTask;
     }
@@ -118,8 +105,8 @@ class TaskService {
     // }
 
     public async getTasksCountByStatus(status: string, userId: string): Promise<number> {
-        const teamIds = await this.crewService.getCrewIds(userId);
-        const projectIds = await this.projectService.getProjectByCreatorId(userId);
+        const teamIds = await crewService.getCrewIds(userId);
+        const projectIds = await projectService.getProjectByCreatorId(userId);
         const count = await TaskModel.find({
             status: status,
             $or: [
@@ -142,7 +129,7 @@ class TaskService {
 
     // Méthode pour obtenir les tâches avec des échéances proches
     public async getUpcomingDeadlines(userId: string, days: number = 7): Promise<Task[]> {
-        const teamIds = await this.crewService.getCrewIds(userId);
+        const teamIds = await crewService.getCrewIds(userId);
         const today = new Date();
         const deadline = new Date();
         deadline.setDate(today.getDate() + days);
@@ -176,4 +163,4 @@ class TaskService {
     }
 }
 
-export default TaskService; 
+export default TaskService.getInstance(); 

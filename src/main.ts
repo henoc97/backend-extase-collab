@@ -1,20 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
-import { Server } from 'socket.io';
 import MongoDBService from './infrastructure/persistance/mongodb/mongodb.service';
 import * as dotenv from 'dotenv';
+import { Server } from 'socket.io';
 import cookieParser from 'cookie-parser';
-import crewRoutes, { createCrewRoutes } from './presentation/routes/crew.routes';
+import SocketService from './application/services/socket.service';
 import userRoutes from './presentation/routes/user.routes';
-import projectRoutes, { createProjectRoutes } from './presentation/routes/project.routes';
-import { createTaskRoutes } from './presentation/routes/task.routes';
-import { createNotificationRoutes } from './presentation/routes/notification.routes';
-import { createMergeReqRoutes } from './presentation/routes/merge-request.routes';
 import commentRoutes from './presentation/routes/comment.routes';
 import authRoutes from './presentation/routes/auth.routes';
 import passport from './application/config/passport.config';
 import session from 'express-session';
+import crewRoutes from './presentation/routes/crew.routes';
+import projectRoutes from './presentation/routes/project.routes';
+import taskRoutes from './presentation/routes/task.routes';
+import mergeReqRoutes from './presentation/routes/merge-request.routes';
+import notificationRoutes from './presentation/routes/notification.routes';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ MongoDBService.connect(mongoUri)
                 // credentials: true, // Autoriser les cookies et les sessions
             }
         });
+        SocketService.initialize(io);
 
 
         // Socket.io connection
@@ -71,13 +73,13 @@ MongoDBService.connect(mongoUri)
         });
 
         // Utiliser les routes
-        app.use('/api/crews', createCrewRoutes(io));
+        app.use('/api/crews', crewRoutes);
         app.use('/api/users', userRoutes);
         app.use('/api/comments', commentRoutes);
-        app.use('/api/projects', createProjectRoutes(io));
-        app.use('/api/tasks', createTaskRoutes(io));
-        app.use('/api/merge', createMergeReqRoutes(io));
-        app.use('/api/notifications', createNotificationRoutes(io));
+        app.use('/api/projects', projectRoutes);
+        app.use('/api/tasks', taskRoutes);
+        app.use('/api/merge', mergeReqRoutes);
+        app.use('/api/notifications', notificationRoutes);
         app.use('/api/auth', authRoutes);
 
         // Start the server

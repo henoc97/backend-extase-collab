@@ -47,15 +47,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/extasecollabdb';
+const mongoUri = process.env.MONGODB_URI || "mongodb+srv://henochristo:9E440BL9w1FVs5EP@extasecollabcluster0.co9v1.mongodb.net/extase-collab-db?retryWrites=true&w=majority&appName=ExtaseCollabCluster0";
 MongoDBService.connect(mongoUri)
     .then(() => {
         // Create HTTP server
         const server = http.createServer(app);
-<<<<<<< HEAD
-        const io = new Server(server);
-        u
-=======
+
         const io = new Server(server, {
             cors: {
                 origin: 'http://localhost:3000', // Autoriser les connexions du front-end
@@ -66,7 +63,6 @@ MongoDBService.connect(mongoUri)
         SocketService.initialize(io);
 
 
->>>>>>> f491c4cc109abc39666f0a6034b9ff514776ce27
         // Socket.io connection
         io.on('connection', (socket) => {
             console.log('A user connected:', socket.id);

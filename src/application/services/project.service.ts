@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
 import ProjectModel, { IProject } from "../../domain/entities/project.entity";
 import crewService from "./crew.service";
+import CrewService from "./crew.service";
+import { Server } from 'socket.io';
 
 class ProjectService {
     private static instance: ProjectService;
+    private crewService: CrewService;
 
-    private constructor() { }
+    private constructor(io: Server) {
+        this.crewService = CrewService.getInstance(io);
+    }
 
-    public static getInstance(): ProjectService {
+    public static getInstance(io: Server): ProjectService {
         if (!ProjectService.instance) {
-            ProjectService.instance = new ProjectService();
+            ProjectService.instance = new ProjectService(io);
         }
         return ProjectService.instance;
     }
@@ -31,7 +36,7 @@ class ProjectService {
 
         const taskIds = project?.tasks!.map((task: any) => task._id);
         console.log("taskIds result from getProjectByID: ", taskIds);
-        const teams = await crewService.getCrewsByTaskIds(taskIds);
+        const teams = await this.crewService.getCrewsByTaskIds(taskIds);
         project.teams = teams;
         console.log("teams result from getProjectByID: ", teams);
         console.log("project result from getProjectByID: ", project);
@@ -70,4 +75,4 @@ class ProjectService {
     }
 }
 
-export default ProjectService.getInstance(); 
+export default ProjectService; 

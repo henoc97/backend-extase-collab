@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import NotificationService from '../../application/services/notification.service';
 import { INotification } from '../../domain/entities/notification.entity';
 import { Server } from 'socket.io';
-
+import pusService from '../../application/services/push.service'
 
 class NotificationController {
     private notificationService: NotificationService;
@@ -18,6 +18,28 @@ class NotificationController {
             res.status(201).json(notification);
         } catch (error) {
             if (error instanceof Error) {
+                res.status(500).json(`Error: ${error.message}`);
+            } else {
+                res.status(500).json('Unknown error');
+            }
+        }
+    }
+
+    public subscribe = async (req: any, res: Response): Promise<void> => {
+        try {
+            const { subscription } = req.body;
+            console.log('req.body: ', req.body);
+            console.log('subscription: ', subscription);
+            if (!subscription) {
+                res.status(400).json({ error: 'Missing subscription' });
+                return;
+            }
+            await pusService.saveSubscription(subscription, req.user.id);
+            console.log('Subscription saved');
+            res.status(201).json({ message: 'Subscribed successfully!' });
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log("error during subscription", error);
                 res.status(500).json(`Error: ${error.message}`);
             } else {
                 res.status(500).json('Unknown error');

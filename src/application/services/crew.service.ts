@@ -1,14 +1,19 @@
 import { model } from "mongoose";
+import { Server } from 'socket.io';
 import CrewModel, { ICrew } from "../../domain/entities/crew.entity";
+import UserObserverService from "./user.observer.service";
 
 class CrewService {
     private static instance: CrewService;
+    private userObserverService: UserObserverService;
 
-    private constructor() { }
+    private constructor(io: Server) {
+        this.userObserverService = UserObserverService.getInstance(io);
+    }
 
-    public static getInstance(): CrewService {
+    public static getInstance(io: Server): CrewService {
         if (!CrewService.instance) {
-            CrewService.instance = new CrewService();
+            CrewService.instance = new CrewService(io);
         }
         return CrewService.instance;
     }
@@ -22,6 +27,12 @@ class CrewService {
             { _id: result._id },
             { $push: { tasks: tasks } }
         );
+
+        const observers = crew.guests.map((guest: string) => {
+            return { email: guest.trim() };
+        });
+
+        this.userObserverService.notify(observers, 'New crew created', `New crew created: ${crew.name}`);
         return result;
     }
 
@@ -68,4 +79,4 @@ class CrewService {
     }
 }
 
-export default CrewService.getInstance();
+export default CrewService;

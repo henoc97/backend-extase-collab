@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import CrewService from '../../application/services/crew.service';
 import { ICrew } from '../../domain/entities/crew.entity';
+import { Server } from 'socket.io';
 
 class CrewController {
-    private crewService = CrewService;
+    private crewService: CrewService;
+
+    public constructor(io: Server) {
+        this.crewService = CrewService.getInstance(io);
+    }
 
     public createCrew = async (req: Request, res: Response): Promise<void> => {
         try {
@@ -75,4 +80,4 @@ class CrewController {
     }
 }
 
-export default new CrewController();
+export default CrewController;

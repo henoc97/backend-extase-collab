@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import ProjectService from '../../application/services/project.service';
 import { IProject } from '../../domain/entities/project.entity';
+import { Server } from 'socket.io';
 
 class ProjectController {
-    private projectService = ProjectService;
+    private projectService: ProjectService;
+
+    public constructor(io: Server) {
+        this.projectService = ProjectService.getInstance(io);
+    }
 
     public createProject = async (req: any, res: any): Promise<void> => {
         try {
@@ -92,4 +97,4 @@ class ProjectController {
     }
 }
 
-export default new ProjectController(); 
+export default ProjectController; 

@@ -11,9 +11,10 @@ export const createNotificationRoutes = (io: Server) => {
     router.use(authenticateToken)
 
 
-    router.post('/notifications', notificationController.createNotification);
-    router.get('/notifications/user/:userId', notificationController.getNotificationsByUserId);
-    router.delete('/notifications/:id', notificationController.deleteNotification);
+    router.post('/', notificationController.createNotification);
+    router.post('/push-subscription', notificationController.subscribe);
+    router.get('/user/:userId', notificationController.getNotificationsByUserId);
+    router.delete('/:id', notificationController.deleteNotification);
 
     return router;
 }

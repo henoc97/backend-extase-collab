@@ -21,25 +21,31 @@ class NotificationService {
 
     // Créer une notification
     public async createNotification(notificationData: any): Promise<INotification> {
-        const notification = new NotificationModel(notificationData);
-        await notification.save();
+        try {
+            const notification = new NotificationModel(notificationData);
+            await notification.save();
 
-        // Émettre un événement de notification via Socket.io
-        this.io.emit('notification', notificationData);
+            // Émettre un événement de notification via Socket.io
+            this.io.emit('notification', notificationData);
 
-        // Envoyer un email
-        await EmailService.sendEmail(notificationData.sendTo, notificationData.title, notificationData.content);
+            // Envoyer un email
+            await EmailService.sendEmail(notificationData.sendTo, notificationData.title, notificationData.content);
 
-        // Envoyer une notification push (si l'abonnement est disponible)
-        if (notificationData.subscription) {
-            await PushService.sendPushNotification(notificationData.subscription, {
-                title: notificationData.title,
-                body: notificationData.content,
-                sendTo: notificationData.receiverId,
-            });
+            // Envoyer une notification push (si l'abonnement est disponible)
+            if (notificationData.subscription) {
+                await PushService.sendPushNotification(notificationData.subscription, {
+                    title: notificationData.title,
+                    content: notificationData.content,
+                    sendTo: notificationData.receiverId,
+                });
+            }
+
+            return notification;
+        } catch (error) {
+            console.log('Error creating notification:', error);
+            throw error;
+
         }
-
-        return notification;
     }
 
     // Obtenir les notifications par utilisateur

@@ -5,9 +5,9 @@ import { Server } from 'socket.io';
 import MongoDBService from './infrastructure/persistance/mongodb/mongodb.service';
 import * as dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import crewRoutes from './presentation/routes/crew.routes';
+import crewRoutes, { createCrewRoutes } from './presentation/routes/crew.routes';
 import userRoutes from './presentation/routes/user.routes';
-import projectRoutes from './presentation/routes/project.routes';
+import projectRoutes, { createProjectRoutes } from './presentation/routes/project.routes';
 import { createTaskRoutes } from './presentation/routes/task.routes';
 import { createNotificationRoutes } from './presentation/routes/notification.routes';
 import { createMergeReqRoutes } from './presentation/routes/merge-request.routes';
@@ -51,7 +51,14 @@ MongoDBService.connect(mongoUri)
     .then(() => {
         // Create HTTP server
         const server = http.createServer(app);
-        const io = new Server(server);
+        const io = new Server(server, {
+            cors: {
+                origin: 'http://localhost:3000', // Autoriser les connexions du front-end
+                methods: ['GET', 'POST'],
+                // credentials: true, // Autoriser les cookies et les sessions
+            }
+        });
+
 
         // Socket.io connection
         io.on('connection', (socket) => {
@@ -64,10 +71,10 @@ MongoDBService.connect(mongoUri)
         });
 
         // Utiliser les routes
-        app.use('/api/crews', crewRoutes);
+        app.use('/api/crews', createCrewRoutes(io));
         app.use('/api/users', userRoutes);
         app.use('/api/comments', commentRoutes);
-        app.use('/api/projects', projectRoutes);
+        app.use('/api/projects', createProjectRoutes(io));
         app.use('/api/tasks', createTaskRoutes(io));
         app.use('/api/merge', createMergeReqRoutes(io));
         app.use('/api/notifications', createNotificationRoutes(io));

@@ -8,13 +8,19 @@ import crewService from "./crew.service";
 import serService from "./user.service";
 import Project from "../../domain/entities/project.entity";
 import projectService from "./project.service";
+import CrewService from "./crew.service";
+import ProjectService from "./project.service";
 
 class TaskService {
     private static instance: TaskService;
     private userObserverService: UserObserverService;
+    private crewService: CrewService;
+    private projectService: ProjectService;
 
     private constructor(io: Server) {
         this.userObserverService = UserObserverService.getInstance(io);
+        this.crewService = CrewService.getInstance(io);
+        this.projectService = ProjectService.getInstance(io);
     }
 
     public static getInstance(io: Server): TaskService {
@@ -112,8 +118,8 @@ class TaskService {
     // }
 
     public async getTasksCountByStatus(status: string, userId: string): Promise<number> {
-        const teamIds = await crewService.getCrewIds(userId);
-        const projectIds = await projectService.getProjectByCreatorId(userId);
+        const teamIds = await this.crewService.getCrewIds(userId);
+        const projectIds = await this.projectService.getProjectByCreatorId(userId);
         const count = await TaskModel.find({
             status: status,
             $or: [
@@ -136,7 +142,7 @@ class TaskService {
 
     // Méthode pour obtenir les tâches avec des échéances proches
     public async getUpcomingDeadlines(userId: string, days: number = 7): Promise<Task[]> {
-        const teamIds = await crewService.getCrewIds(userId);
+        const teamIds = await this.crewService.getCrewIds(userId);
         const today = new Date();
         const deadline = new Date();
         deadline.setDate(today.getDate() + days);

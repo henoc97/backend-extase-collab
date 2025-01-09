@@ -5,7 +5,7 @@ import { IComment } from '../../domain/entities/comment.entity';
 class CommentController {
     private commentService = CommentService;
 
-    // public async createComment(req: Request, res: Response): Promise<void> {
+    // public createComment = async (req: Request, res: Response): Promise<void> => {
     //     try {
     //         const commentData: IComment = req.body;
     //         const comment = await this.commentService.createComment(commentData);
@@ -19,7 +19,7 @@ class CommentController {
     //     }
     // }
 
-    // public async getCommentById(req: Request, res: Response): Promise<void> {
+    // public getCommentById = async (req: Request, res: Response): Promise<void> => {
     //     try {
     //         const commentId = req.params.id;
     //         const comment = await this.commentService.getCommentById(commentId);
@@ -36,7 +36,7 @@ class CommentController {
     //     }
     // }
 
-    public async updateComment(req: Request, res: Response): Promise<void> {
+    public updateComment = async (req: Request, res: Response): Promise<void> => {
         try {
             const commentId = req.params.id;
             const updateData = req.body;
@@ -54,7 +54,7 @@ class CommentController {
         }
     }
 
-    public async deleteComment(req: Request, res: Response): Promise<void> {
+    public deleteComment = async (req: Request, res: Response): Promise<void> => {
         try {
             const commentId = req.params.id;
             const deletedComment = await this.commentService.deleteComment(commentId);

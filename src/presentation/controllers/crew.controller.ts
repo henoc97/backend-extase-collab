@@ -1,17 +1,21 @@
 import { Request, Response } from 'express';
 import CrewService from '../../application/services/crew.service';
 import { ICrew } from '../../domain/entities/crew.entity';
+import { Server } from 'socket.io';
+import crewService from '../../application/services/crew.service';
 
 class CrewController {
-    private crewService = CrewService;
 
-    public async createCrew(req: Request, res: Response): Promise<void> {
+    public createCrew = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewData: ICrew = req.body;
-            const crew = await this.crewService.createCrew(crewData);
+            console.log('crew data req.body: ' + JSON.stringify(req.body));
+            console.log('crew data received: ' + JSON.stringify(crewData));
+            const crew = await crewService.createCrew(crewData);
             res.status(201).json(crew);
         } catch (error) {
             if (error instanceof Error) {
+                console.log(`Error: ${error.message}`);
                 res.status(500).json(`Error: ${error.message}`);
             } else {
                 res.status(500).json('Unknown error');
@@ -19,10 +23,10 @@ class CrewController {
         }
     }
 
-    public async getCrewById(req: Request, res: Response): Promise<void> {
+    public getCrewById = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewId = req.params.id;
-            const crew = await this.crewService.getCrewById(crewId);
+            const crew = await crewService.getCrewById(crewId);
             if (!crew) {
                 res.status(404).json({ message: 'Crew not found' });
             }
@@ -36,11 +40,11 @@ class CrewController {
         }
     }
 
-    public async updateCrew(req: Request, res: Response): Promise<void> {
+    public updateCrew = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewId = req.params.id;
             const updateData = req.body;
-            const updatedCrew = await this.crewService.updateCrew(crewId, updateData);
+            const updatedCrew = await crewService.updateCrew(crewId, updateData);
             if (!updatedCrew) {
                 res.status(404).json({ message: 'Crew not found' });
             }
@@ -54,10 +58,10 @@ class CrewController {
         }
     }
 
-    public async deleteCrew(req: Request, res: Response): Promise<void> {
+    public deleteCrew = async (req: Request, res: Response): Promise<void> => {
         try {
             const crewId = req.params.id;
-            const deletedCrew = await this.crewService.deleteCrew(crewId);
+            const deletedCrew = await crewService.deleteCrew(crewId);
             if (!deletedCrew) {
                 res.status(404).json({ message: 'Crew not found' });
             }

@@ -3,17 +3,34 @@ import userService from '../../application/services/user.service';
 import { User } from '../../domain/entities/user.entity';
 import authService from '../../application/services/auth.service';
 
-
 class UserController {
-    public async createUser(req: Request, res: Response): Promise<void> {
+    public createUser = async (req: Request, res: Response): Promise<void> => {
         try {
             const userData: User = req.body;
+            console.log("user cata received: " + JSON.stringify(userData));
             const user: any = await userService.createUser(userData);
-            const token = authService.generateToken(user._id, user.email);
+            console.log("user created: " + user);
+            const tokens = authService.generateToken(user._id, user.email);
+
+            // Stockage du refresh token dans un cookie sécurisé
+            res.cookie("refreshToken", tokens.refreshToken, {
+                httpOnly: true,
+                secure: false, // Assurez-vous d'utiliser HTTPS
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+            });
+
+            res.cookie("accessToken", tokens.accessToken, {
+                httpOnly: true, // Assurez-vous qu'il n'est pas accessible par JavaScript
+                secure: false,  // Passez à true en production
+                sameSite: "strict",
+                maxAge: 60 * 60 * 1000, // 1 heure
+            });
+
             user.password = "";
-            console.log("token: " + token);
-            const result = { user, token };
-            res.status(201).json(result);
+
+            // Répondre avec un message de succès et les tokens
+            res.status(201).json({ message: "success" });
         } catch (error) {
             if (error instanceof Error) {
                 res.status(500).json(`Error: ${error.message}`);
@@ -23,7 +40,7 @@ class UserController {
         }
     }
 
-    public async getUserById(req: Request, res: Response): Promise<void> {
+    public getUserById = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = req.params.id;
             const user = await userService.getUserById(userId);
@@ -40,7 +57,7 @@ class UserController {
         }
     }
 
-    public async updateUser(req: Request, res: Response): Promise<void> {
+    public updateUser = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = req.params.id;
             const updateData = req.body;
@@ -58,7 +75,7 @@ class UserController {
         }
     }
 
-    public async deleteUser(req: Request, res: Response): Promise<void> {
+    public deleteUser = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = req.params.id;
             const deletedUser = await userService.deleteUser(userId);

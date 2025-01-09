@@ -1,15 +1,16 @@
 import { Router } from 'express';
-import CrewController from '../controllers/crew.controller';
 import authenticateToken from '../../application/middlewares/auth';
+import crewController from '../controllers/crew.controller';
 
 const router = Router();
 
 router.use(authenticateToken)
 
 // Définir les routes pour Crew
-router.post('/', CrewController.createCrew);
-router.get('/:id', CrewController.getCrewById);
-router.put('/:id', CrewController.updateCrew);
-router.delete('/:id', CrewController.deleteCrew);
+router.post('/', crewController.createCrew);
+router.get('/:id', crewController.getCrewById);
+router.put('/:id', crewController.updateCrew);
+router.delete('/:id', crewController.deleteCrew);
+
 
 export default router;

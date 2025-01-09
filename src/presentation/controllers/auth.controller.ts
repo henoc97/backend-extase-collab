@@ -4,12 +4,12 @@ import authService from '../../application/services/auth.service';
 import jwt from 'jsonwebtoken';
 
 class AuthController {
-    public async googleAuth(): Promise<any> {
+    public googleAuth = async (): Promise<any> => {
         // Authentification par Google
         passport.authenticate('google', { scope: ['profile', 'email'] });
     }
 
-    public async googleCallback(req: any, res: Response): Promise<void> {
+    public googleCallback = async (req: any, res: Response): Promise<void> => {
         if (!req.user) {
             res.status(401).json({ message: 'User not authenticated' });
             return;
@@ -25,11 +25,19 @@ class AuthController {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
         });
 
-        res.json({ accessToken: tokens.accessToken });
+        res.cookie("accessToken", tokens.accessToken, {
+            httpOnly: true, // Assurez-vous qu'il n'est pas accessible par JavaScript
+            secure: false,  // Passez à true en production
+            sameSite: "strict",
+            maxAge: 60 * 60 * 1000, // 1 heure
+        });
+
+        res.redirect('http://localhost:3000/dashboard');
     }
 
-    public async login(req: Request, res: Response): Promise<void> {
+    public login = async (req: Request, res: Response): Promise<void> => {
         const { email, password } = req.body;
+        console.log("login", email, password);
         try {
             const user = await authService.login(email, password);
             const tokens = authService.generateToken(user._id, user.email);
@@ -42,10 +50,18 @@ class AuthController {
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
             });
 
-            res.json({ accessToken: tokens.accessToken });
+            res.cookie("accessToken", tokens.accessToken, {
+                httpOnly: true, // Assurez-vous qu'il n'est pas accessible par JavaScript
+                secure: false,  // Passez à true en production
+                sameSite: "strict",
+                maxAge: 60 * 60 * 1000, // 1 heure
+            });
+
+            res.status(200).json({ message: "success" });
 
         } catch (error: unknown) {
             if (error instanceof Error) {
+                console.log("error: ", error.message);
                 res.status(401).json({ message: error.message });
             } else {
                 res.status(500).json({ message: 'Unknown error occurred' });
@@ -53,7 +69,7 @@ class AuthController {
         }
     }
 
-    public async refreshToken(req: Request, res: Response): Promise<void> {
+    public refreshToken = async (req: Request, res: Response): Promise<void> => {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) res.sendStatus(401);
 
@@ -66,16 +82,24 @@ class AuthController {
             if (err) return res.sendStatus(403);
 
             const accessToken = authService.generateAccessToken(user.id, user.email)
-            res.json({ accessToken });
+
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true, // Assurez-vous qu'il n'est pas accessible par JavaScript
+                secure: false,  // Passez à true en production
+                sameSite: "strict",
+                maxAge: 60 * 60 * 1000, // 1 heure
+            });
+
+            res.status(200).json({ message: "success" });
         });
     }
 
-    public async logout(req: Request, res: Response): Promise<void> {
+    public logout = async (req: Request, res: Response): Promise<void> => {
         res.clearCookie("refreshToken");
         res.json({ message: "Déconnexion réussie" });
     }
 
-    public async protectedRoute(req: Request, res: Response): Promise<void> {
+    public protectedRoute = async (req: Request, res: Response): Promise<void> => {
         res.json({ message: 'Protected route accessed', user: req.user });
     }
 }

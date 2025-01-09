@@ -14,6 +14,7 @@ class AuthService {
     }
     public async login(email: string, password: string) {
         const user = await UserService.findUserByEmail(email);
+        console.log("user", JSON.stringify(user));
         if (!user || !(await UserService.validateUserPassword(user, password))) {
             throw new Error('Invalid credentials');
         }
@@ -31,7 +32,7 @@ class AuthService {
         if (!jwtSecret) {
             throw new Error('JWT_SECRET environment variable is not defined');
         }
-        const accessToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '15m' });
+        const accessToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '1h' });
         const refreshToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '7d' });
         const tokens = { accessToken, refreshToken };
         return tokens;
@@ -49,7 +50,7 @@ class AuthService {
         if (!jwtSecret) {
             throw new Error('JWT_SECRET environment variable is not defined');
         }
-        const accessToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '15m' });
+        const accessToken = jwt.sign({ id: userId, email: email }, jwtSecret, { expiresIn: '1h' });
         return accessToken;
     }
 }

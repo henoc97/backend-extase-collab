@@ -15,16 +15,12 @@ router.get(
     '/google',
     passport.authenticate('google', { scope: ['profile', 'email'] }),
     (req, res) => {
-        res.redirect('/');
+        // res.redirect('/');
     }
 );
 router.get(
     '/google/callback',
-    passport.authenticate('google',
-        {
-            successRedirect: 'http://localhost:3000/dashboard', // Remplacez par votre URL après login
-            failureRedirect: 'http://localhost:3000/login',    // Redirection en cas d'échec
-        }),
+    passport.authenticate('google', { session: false }),
     AuthController.googleCallback
 );
 

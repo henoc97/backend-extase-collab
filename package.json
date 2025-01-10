@@ -4,6 +4,7 @@
   "main": "src/main.ts",
   "scripts": {
     "build": "tsc",
+    "postbuild": "cp -r types dist",
     "start": "node dist/main.js",
     "start:dev": "nodemon --watch src --ext ts --exec ts-node src/main.ts",
     "start:mongodb": "sudo systemctl start mongod",

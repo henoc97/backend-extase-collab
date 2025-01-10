@@ -8,10 +8,7 @@
     "baseUrl": ".",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "paths": {
-    "@types/passport": ["types/passport"]
-  }
+    "skipLibCheck": true
   },
   "include": ["src/**/*", "types/**/*"],
   "exclude": ["node_modules"]

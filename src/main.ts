@@ -92,3 +92,5 @@ MongoDBService.connect(mongoUri)
         console.error('Failed to connect to MongoDB:', err);
         process.exit(1); // Arrêter le serveur si la connexion échoue
     });
+
+// Hello, c est hénoc.

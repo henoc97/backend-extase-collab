@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { INotification } from '../../domain/entities/notification.entity';
 import { Server } from 'socket.io';
-import pusService from '../../application/services/push.service'
+import pusService from '../../infrastructure/external-services/push.service'
 import notificationService from '../../application/services/notification.service';
 
 class NotificationController {

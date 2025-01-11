@@ -1,7 +1,7 @@
 import NotificationModel, { INotification } from "../../domain/entities/notification.entity";
-import EmailService from './email.service';
-import PushService from './push.service';
-import SocketService from "./socket.service";
+import { emailSwitcher } from "../helper/email-type-switcher";
+import pushService from '../../infrastructure/external-services/push.service';
+import socketService from "../../infrastructure/external-services/socket.service";
 
 class NotificationService {
     private static instance: NotificationService;
@@ -22,17 +22,30 @@ class NotificationService {
             await notification.save();
 
             // Émettre un événement de notification via Socket.io
-            SocketService.sendNotification(notificationData.receiverId, notificationData);
+            try {
+                socketService.sendNotification(notificationData.receiverId, notificationData)
+                console.log('msg sent successfully by socket');
 
-            // Envoyer un email
-            await EmailService.sendEmail(notificationData.sendTo, notificationData.title, notificationData.content);
+            } catch (error) {
+                console.error('Error sending msg by socket:', error);
+            }
+
+            // Envoyer un email en fonction du type de notification
+            try {
+                await emailSwitcher(notificationData);
+            } catch (error) {
+                console.error('Error sending email:', error);
+                // Optionally, you can implement additional logic here, such as logging the error to a database or notifying an admin.
+            }
+            // await emailService.sendEmail(notificationData.emailTo, notificationData.title, notificationData.content);
 
             // Envoyer une notification push (si l'abonnement est disponible)
-            if (notificationData.subscription) {
-                await PushService.sendPushNotification(notificationData.subscription, {
+            const isSubscribed = await pushService.getSubscription(notificationData.sendTo);
+            if (isSubscribed) {
+                await pushService.sendPushNotification(notificationData.subscription, {
                     title: notificationData.title,
                     content: notificationData.content,
-                    sendTo: notificationData.receiverId,
+                    sendTo: notificationData.sendTo,
                 });
             }
 

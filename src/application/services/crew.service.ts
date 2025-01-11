@@ -27,12 +27,19 @@ class CrewService {
             { $push: { tasks: tasks } }
         );
 
-        const observers = crew.guests.map((guest: string) => {
+        this.notifGuest(crew.guests, crew.name);
+        return result;
+    }
+
+    public async notifGuest(guests: string[], crewName: string): Promise<void> {
+        const observers = guests.map((guest: string) => {
             return { email: guest.trim() };
         });
 
-        userObserverService.notify(observers, 'New crew created', `New crew created: ${crew.name}`);
-        return result;
+        console.log('observers: ' + JSON.stringify(observers));
+
+        userObserverService.notify(observers, 'New crew created', `New crew created: ${crewName}`);
+
     }
 
     public async getCrewById(crewId: string): Promise<ICrew | null> {
@@ -76,6 +83,33 @@ class CrewService {
     public async deleteCrew(crewId: string): Promise<ICrew | null> {
         return await CrewModel.findByIdAndDelete(crewId);
     }
-}
+
+    public async addMemberToCrew(crewId: string, memberId: string): Promise<ICrew | null> {
+        return await CrewModel.findByIdAndUpdate(crewId, { $push: { members: memberId } }, { new: true });
+    }
+
+    public async removeMemberFromCrew(crewId: string, memberId: string): Promise<ICrew | null> {
+        return await CrewModel.findByIdAndUpdate(crewId, { $pull: { members: memberId } }, { new: true });
+    }
+
+    public async addTaskToCrew(crewId: string, taskId: string): Promise<ICrew | null> {
+        return await CrewModel.findByIdAndUpdate(crewId, { $push: { tasks: taskId } }, { new: true });
+    }
+
+    public async removeTaskFromCrew(crewId: string, taskId: string): Promise<ICrew | null> {
+        return await CrewModel.findByIdAndUpdate(crewId, { $pull: { tasks: taskId } }, { new: true });
+    }
+
+    public async getCrewsByUserId(userId: string): Promise<ICrew[]> {
+        return await CrewModel.find({ members: { $in: [userId] } });
+    }
+
+    public async getCrewsByDirectorId(directorId: string): Promise<ICrew[]> {
+        return await CrewModel.find({ crewDirector: directorId });
+    }
+
+    public async acceptInvitation(crewId: string, guestEmail: string): Promise<void> {
+        return await CrewModel.findByIdAndUpdate(crewId, { $push: { members: guestEmail } }, { new: true });
+    }
 
 export default CrewService.getInstance();

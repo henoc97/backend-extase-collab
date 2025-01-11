@@ -5,7 +5,7 @@ import MongoDBService from './infrastructure/persistance/mongodb/mongodb.service
 import * as dotenv from 'dotenv';
 import { Server } from 'socket.io';
 import cookieParser from 'cookie-parser';
-import SocketService from './application/services/socket.service';
+import SocketService from './infrastructure/external-services/socket.service';
 import userRoutes from './presentation/routes/user.routes';
 import commentRoutes from './presentation/routes/comment.routes';
 import authRoutes from './presentation/routes/auth.routes';

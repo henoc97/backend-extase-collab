@@ -21,8 +21,8 @@ class UserObserverService implements IObserverService {
     public notify(observers: any[], title: string, content: string): void {
         for (const observer of observers) {
             const notificationData = {
-                "receiverId": observer.id,
-                "sendTo": observer.email,
+                "sendTo": observer!.id,
+                "emailTo": observer.email,
                 "title": title,
                 "content": content
             }

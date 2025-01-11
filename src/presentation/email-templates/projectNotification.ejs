@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>New Project Created</h1>
+        </div>
+        <div class="content">
+            <p>Hello <%= userName %>,</p>
+            <p>A new project has been created:</p>
+            <p><strong>Title:</strong> <%= projectTitle %></p>
+            <p><strong>Description:</strong> <%= projectDescription %></p>
+            <a href="<%= projectLink %>" class="button">View Project</a>
+        </div>
+        <div class="footer">
+            <p>Extase-Home</p>
+        </div>
+    </div>
+</body>
+</html>
